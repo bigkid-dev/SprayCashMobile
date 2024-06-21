@@ -13,3 +13,12 @@ export const getValue = async(key: string) => {
         return "/onboardOne"
     }
 }
+
+export const getValueAuth = async(key: string) => {
+    let result = await storage.getItemAsync(key);
+    if (result) {
+       return result
+    } else {
+        return ""
+    }
+}

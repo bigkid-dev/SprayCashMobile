@@ -17,7 +17,7 @@ import { Link, router } from "expo-router";
 import { widthFactor } from "@/constants/ScreenSize";
 import { useAuthContext } from "@/contexts/AutContext";
 import { makePostRequest } from "@/lib/requests";
-import { postUserData, getUserData } from "@/lib/api-client";
+import { postUserData, getUserData, getUserAuthData, postUserAuthData } from "@/lib/api-client";
 import { storeValue } from "@/constants/storage";
 
 type PryButtonProps = {
@@ -73,7 +73,7 @@ const getDataKey = (data: dataType): string | null | undefined => {
   }
 };
 
-export const PryButton = ({
+export const PryAuthButton = ({
   text,
   isCentered,
   isRequest,
@@ -93,7 +93,7 @@ export const PryButton = ({
     url: string,
     value: ValueData
   ) => {
-    console.log("status", status);
+    console.log(status);
 
     if (url && (status === 200 || status === 201)) {
       router.replace(url);
@@ -138,8 +138,8 @@ export const PryButton = ({
 
       //   makePostRequest('api/v1/auth/signup/', value )
       const { status, data } = isGet
-        ? await getUserData(requestUrl!)
-        : await postUserData(value, requestUrl!);
+        ? await getUserAuthData(requestUrl!)
+        : await postUserAuthData(value, requestUrl!);
       handleResponse(status, data, url!, value);
     } else if (url && !requestUrl) {
       router.push(url);
@@ -163,7 +163,7 @@ export const PryButton = ({
   );
 };
 
-export default PryButton;
+export default PryAuthButton;
 
 interface socialBtnProps {
   height: number;

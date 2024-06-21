@@ -32,7 +32,10 @@ const TopChild = () => {
       <PryButton
         isCentered={true}
         text="Continue with Email"
-        url="auth/login"
+        url="ride"
+        isRequest={true}
+        requestUrl="api/v1/auth/user/info"
+        isGet={true}
       />
     </View>
   );

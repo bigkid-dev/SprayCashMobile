@@ -3,7 +3,7 @@ import { View, Text, StyleSheet } from "react-native";
 import DefaultPageLayout from "@/components/layout/Default";
 import BasicTemp from "@/components/ui/general/BasicTemplate";
 import HeadingText from "@/components/ui/auth/HeadingText";
-import PryButton from "@/components/ui/button/Buttons";
+import PryButton from "@/components/ui/button/LoginBtn";
 import PryTextInput from "@/components/ui/inputs/textInputs";
 import TopChild from "@/components/ui/auth/TopChild";
 import { Link } from "expo-router";

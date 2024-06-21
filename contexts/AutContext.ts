@@ -1,8 +1,14 @@
 import React, { useState, createContext, ReactNode, ReactElement, useContext } from "react";
 
+interface errorObj {
+    errors: string;
+  }
+  
+  interface dataType {
+    [key: string]: errorObj;
+  }
 
-
-interface AuthValues {
+export interface AuthValues {
     userName: string;
     firstName: string;
     lastName: string;
@@ -11,9 +17,9 @@ interface AuthValues {
     countryCode: string;
     password: string;
     notification: boolean;
-    notificationMessage: string;
+    notificationMessage: string | errorObj;
     termsCondition?: boolean;
-    code?: string
+    code?: string;
 }
 
 
