@@ -4,6 +4,7 @@ import React from 'react';
 import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
+import 'react-native-gesture-handler';
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
