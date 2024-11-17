@@ -17,9 +17,10 @@ import Spacing from "../general/Spacing";
 interface otpProps {
   boxCount?: number;
   headingText?: string;
+  noText: boolean;
 }
 
-const OtpComponent = ({ boxCount, headingText }: otpProps) => {
+const OtpComponent = ({ boxCount, headingText, noText }: otpProps) => {
   const digit = boxCount ? boxCount : 5;
   const [boxIndex, setBoxIndex] = useState(Array(digit).fill(""));
   const { values, updateValues } = useAuthContext();
@@ -74,17 +75,19 @@ const OtpComponent = ({ boxCount, headingText }: otpProps) => {
       >
         {boxes}
       </View>
-        <Spacing space={20}/>
-      <Text
-        style={{
-          fontWeight: "400",
-          fontSize: 12,
-          color: "#fff",
-          textAlign: "center",
-        }}
-      >
-        Didnt recieve OTP? resend code
-      </Text>
+      <Spacing space={20} />
+      {!noText && (
+        <Text
+          style={{
+            fontWeight: "400",
+            fontSize: 12,
+            color: "#fff",
+            textAlign: "center",
+          }}
+        >
+          Didnt recieve OTP? resend code
+        </Text>
+      )}
     </View>
   );
 };
@@ -104,7 +107,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     paddingLeft: 20 * ScaleFactor(),
     borderColor: "#5E5E5E",
-    color:"#fff"
+    color: "#fff",
   },
 });
 

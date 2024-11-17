@@ -60,7 +60,32 @@ interface navItemType {
   icon: iconProps;
 }
 
-const OnboardTwo = () => {
+type FundingItem = {
+  id: string;
+  name: string;
+  amount: number;
+  position: Animated.Value;
+};
+
+const generateRandomData = (): FundingItem[] => {
+  const names = [
+    "Ali",
+    "Johnson",
+    "Ire",
+    "Halimat",
+    "Chief Ade",
+    "Bald-Eagle",
+    "Olakunle",
+  ];
+  return names.map((name, index) => ({
+    id: `user-${index}`,
+    name,
+    amount: Math.floor(Math.random() * 1000) + 1, // Random funding amount
+    position: new Animated.Value(index * 60), // Initial position
+  }));
+};
+
+const SprayAdmin = () => {
   const content: contentType[] = [
     {
       index: 1,
@@ -134,92 +159,43 @@ const OnboardTwo = () => {
   const { values, updateValues } = useAuthContext();
   const [balanceVal, setBalanceVal] = useState(1000);
   const [openDropDown, setOpenDropDown] = useState(false);
+  const [recievedFunds, setRecievedFunds] = useState(100000);
+  const [isVisible, setIsVisible] = useState(false);
+  const [fundingData, setFundingData] = useState<FundingItem[]>(
+    generateRandomData()
+  );
 
-  const triggerAnimation = () => {
-    // Reset values (optional, if you want to trigger it multiple times)
-    translateY.setValue(0);
-    opacity.setValue(1);
+  // Helper function to generate random funding data
 
-    Animated.parallel([
-      Animated.timing(translateY, {
-        toValue: -180, // Move up by 30 pixels
-        duration: 1000, // Duration in milliseconds
-        useNativeDriver: true,
-      }),
-      Animated.timing(opacity, {
-        toValue: 0, // Fade out to invisible
-        duration: 1000,
-        useNativeDriver: true,
-      }),
-    ]).start();
-  };
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setFundingData((prevData) => {
+        // Update funding amounts
+        const updatedData = prevData.map((item) => ({
+          ...item,
+          amount: item.amount + Math.floor(Math.random() * 5000), // Increment by random value
+        }));
 
-  async function playSoundOnce() {
-    console.log("Loading Sound");
-    const { sound } = await Audio.Sound.createAsync(
-      require("@/assets/sounds/money.mp3") // Replace with your sound file path
-    );
-    setSound(sound);
+        // Sort data by amount in descending order
+        updatedData.sort((a, b) => b.amount - a.amount);
 
-    console.log("Playing Sound");
-    await sound.playAsync();
+        // Animate positions
+        updatedData.forEach((item, index) => {
+          Animated.timing(item.position, {
+            toValue: index * 60, // Calculate new position based on index
+            duration: 500,
+            useNativeDriver: true,
+          }).start();
+        });
 
-    // Automatically unload the sound after it finishes playing
-    sound.setOnPlaybackStatusUpdate((status) => {
-      if (status.didJustFinish) {
-        console.log("Sound finished playing");
-        sound.unloadAsync(); // Unload the sound
-      }
-    });
-  }
+        return updatedData;
+      });
+      setBalance(balance + Math.floor(Math.random() * 50000));
+      setRecievedFunds(recievedFunds + Math.floor(Math.random() * 50000));
+    }, 2000);
 
-  React.useEffect(() => {
-    return sound
-      ? () => {
-          console.log("Unloading Sound");
-          sound.unloadAsync();
-        }
-      : undefined;
-  }, [sound]);
-
-  const startShake = () => {
-    setBalance(balance - balanceVal);
-    Animated.sequence([
-      Animated.timing(shakeAnimation, {
-        toValue: 1,
-        duration: 50,
-        useNativeDriver: true,
-      }),
-      Animated.timing(shakeAnimation, {
-        toValue: -1,
-        duration: 50,
-        useNativeDriver: true,
-      }),
-      Animated.timing(shakeAnimation, {
-        toValue: 1,
-        duration: 50,
-        useNativeDriver: true,
-      }),
-      Animated.timing(shakeAnimation, {
-        toValue: 0,
-        duration: 50,
-        useNativeDriver: true,
-      }),
-    ]).start();
-    triggerAnimation();
-    playSoundOnce();
-  };
-
-  const shakeStyle = {
-    transform: [
-      {
-        translateX: shakeAnimation.interpolate({
-          inputRange: [-1, 1],
-          outputRange: [-5, 5], // Adjust the values for shake intensity
-        }),
-      },
-    ],
-  };
+    return () => clearInterval(interval); // Clear interval on component unmount
+  }, []);
 
   const currentContent = content[position];
 
@@ -263,7 +239,7 @@ const OnboardTwo = () => {
   return (
     // <LinearGradientComp />
     <View
-      style={{ flex: 1, backgroundColor: "#fff" }}
+      style={{ flex: 1, backgroundColor: "#131429" }}
       onTouchStart={onTouchStart}
       onTouchEnd={onTouchEnd}
     >
@@ -272,7 +248,7 @@ const OnboardTwo = () => {
           <AntDesign name="menu-fold" size={24} color="white" />
         </View>
         <View style={{ width: "60%" }}>
-          <ThemedText style={styles.headingText}>#CHIVIDO</ThemedText>
+          <ThemedText style={styles.headingText}>#{values["partyName"]}</ThemedText>
         </View>
       </View>
       <View style={styles.accountInfo}>
@@ -285,27 +261,41 @@ const OnboardTwo = () => {
           </View>
 
           <View style={styles.goRow}>
-            <ThemedText style={styles.amount}>{`₦${formatNumber(
-              balance
-            )}`}</ThemedText>
-            <Ionicons name="eye" size={18} color="black" />
+            <ThemedText style={styles.amount}>
+              {isVisible ? `*******` : `₦${formatNumber(balance)}`}
+            </ThemedText>
+            {isVisible ? (
+              <Ionicons
+                onPress={() => setIsVisible(!isVisible)}
+                name="eye-off"
+                size={18}
+                color="black"
+              />
+            ) : (
+              <Ionicons
+                onPress={() => setIsVisible(!isVisible)}
+                name="eye"
+                size={18}
+                color="black"
+              />
+            )}
           </View>
         </View>
         <View style={styles.lower}>
           <View style={styles.lowerContainer}>
-            <ThemedText style={styles.balanceText}>Total Spent</ThemedText>
-            <ThemedText style={styles.innerText}>₦1000,000</ThemedText>
+            <ThemedText style={styles.balanceText}>Recieved</ThemedText>
+            <ThemedText style={styles.innerText}>
+              ₦{`${formatNumber(recievedFunds)}`}
+            </ThemedText>
           </View>
           <View style={styles.lowerContainer}>
-            <ThemedText style={styles.balanceText}>Spenders board</ThemedText>
+            <ThemedText style={styles.balanceText}>Participants</ThemedText>
             <View style={styles.goRow}>
-              <ThemedText style={styles.innerText}>12th</ThemedText>
-              <AntDesign name="arrowup" size={14} color="green" />
-              <AntDesign name="arrowdown" size={14} color="red" />
+              <ThemedText style={styles.innerText}>87</ThemedText>
             </View>
           </View>
           <View style={styles.lowerContainer}>
-            <ThemedText style={styles.balanceText}>Incognito Mode</ThemedText>
+            <ThemedText style={styles.balanceText}>Stop Funding</ThemedText>
             <View style={styles.goRow}>
               <ThemedText style={styles.innerText}></ThemedText>
               <Switch
@@ -321,124 +311,56 @@ const OnboardTwo = () => {
         </View>
       </View>
       <View style={styles.main}>
-        {isLive && <LiveVideo />}
-        {!isLive && (
-          <View style={styles.celebrant}>
-            <View>
-              <Image
-                style={styles.celImg}
-                resizeMode="cover"
-                source={require("@/assets/images/celebrant.jpg")}
-              />
-            </View>
-            <View>
-              <Text style={[styles.sprayText]}>
-                #CHIVIDO <FontAwesome name="circle" size={8} color="green" />
-              </Text>
-              <Text style={[styles.sprayText, { textAlign: "right" }]}>
-                Spray the Bride
-              </Text>
+        {/* {isLive && <LiveVideo />} */}
+        <View style={{ flex: 1 }}>
+          <View style={styles.summaryInfo}>
+            <ThemedText style={styles.amount}></ThemedText>
+            <View style={styles.lowView}>
+              <View style={{ width: "40%" }}>
+                <Text
+                  style={[
+                    styles.innerText,
+                    { textAlign: "center", color: "blue" },
+                  ]}
+                ></Text>
+                <Text style={[styles.balanceText, { textAlign: "center" }]}>
+                  {" "}
+                </Text>
+              </View>
+              <View style={{ width: "40%" }}>
+                <Text
+                  style={[
+                    styles.innerText,
+                    { textAlign: "center", color: "green" },
+                  ]}
+                ></Text>
+                <Text style={[styles.balanceText, { textAlign: "center" }]}>
+                  {" "}
+                </Text>
+              </View>
             </View>
           </View>
-        )}
-        {!isLive && (
-          <TouchableOpacity style={styles.coin} onPress={startShake}>
-            <Animated.Image
-              resizeMode="contain"
-              style={[styles.coinImg, shakeStyle]}
-              source={require("@/assets/images/nairacoin.png")}
-            />
-
-            <Animated.View
-              style={[
-                styles.textContainer,
-                {
-                  transform: [{ translateY }],
-                  opacity,
-                },
-              ]}
-            >
-              <Text style={styles.text}>{`+${balanceVal}`}</Text>
-            </Animated.View>
-          </TouchableOpacity>
-        )}
-        <View style={styles.currency}>
-          <View style={styles.currencySign}>
-            <ThemedText>₦</ThemedText>
+          <View style={styles.container}>
+            <ScrollView>
+              {fundingData.map((item) => (
+                <Animated.View
+                  key={item.id}
+                  style={[
+                    styles.tab,
+                    { transform: [{ translateY: item.position }] },
+                  ]}
+                >
+                  <AntDesign name="arrowup" size={14} color="green" />
+                  <AntDesign name="arrowdown" size={14} color="red" />
+                  <Text style={styles.name}>{item.name}</Text>
+                  <Text style={styles.amount}>
+                    ₦{item.amount.toLocaleString()}
+                  </Text>
+                </Animated.View>
+              ))}
+            </ScrollView>
           </View>
-          <TouchableOpacity
-            onPress={() => setOpenDropDown(true)}
-            style={styles.currencyValue}
-          >
-            <ThemedText>{balanceVal}</ThemedText>
-            <AntDesign
-              name="caretdown"
-              size={14}
-              color="rgba(255,255,255,0.6)"
-            />
-          </TouchableOpacity>
         </View>
-        {openDropDown && (
-          <View style={styles.dropDown}>
-            <TouchableOpacity
-              onPress={() => {
-                setBalanceVal(1000);
-                setOpenDropDown(false);
-              }}
-              style={{ flex: 1 }}
-            >
-              <Text style={styles.innerTextTwo}>₦1000</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => {
-                setBalanceVal(500);
-                setOpenDropDown(false);
-              }}
-              style={{ flex: 1 }}
-            >
-              <Text style={styles.innerTextTwo}>₦500</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => {
-                setBalanceVal(200);
-                setOpenDropDown(false);
-              }}
-              style={{ flex: 1 }}
-            >
-              <Text style={styles.innerTextTwo}>₦200</Text>
-            </TouchableOpacity>
-          </View>
-        )}
-        <TouchableOpacity
-          style={[styles.fundingMode, !isLive && { backgroundColor: "#fff" }]}
-        >
-          {isLive ? (
-            <TouchableOpacity style={styles.coinTwo} onPress={startShake}>
-              <Animated.Image
-                resizeMode="contain"
-                style={[styles.coinImgTwo, shakeStyle]}
-                source={require("@/assets/images/nairacoin.png")}
-              />
-              <Animated.View
-                style={[
-                  styles.textContainer,
-                  {
-                    transform: [{ translateY }],
-                    opacity,
-                  },
-                ]}
-              >
-                <Text style={styles.text}>{`+${balanceVal}`}</Text>
-              </Animated.View>
-            </TouchableOpacity>
-          ) : (
-            <MaterialCommunityIcons
-              name="swap-horizontal"
-              size={24}
-              color="black"
-            />
-          )}
-        </TouchableOpacity>
         <View style={styles.bottomNav}>
           {navItems.map((items) => (
             <TouchableOpacity
@@ -458,7 +380,7 @@ const OnboardTwo = () => {
   );
 };
 
-export default OnboardTwo;
+export default SprayAdmin;
 
 const styles = StyleSheet.create({
   fundingMode: {
@@ -549,13 +471,14 @@ const styles = StyleSheet.create({
     paddingTop: 50,
     paddingHorizontal: 20,
     flexDirection: "row",
+    borderBottomLeftRadius: 40,
+    borderBottomRightRadius: 40,
   },
-  main: {
-    flex: 0.8,
-    backgroundColor: "#131429",
-    justifyContent: "center",
-    alignItems: "center",
-  },
+  // main: {
+  //   flex: 0.8,
+  //   backgroundColor: "#131429",
+  //   paddingHorizontal: 20,
+  // },
   accountInfo: {
     position: "absolute",
     width: "80%",
@@ -569,6 +492,22 @@ const styles = StyleSheet.create({
     paddingVertical: 18,
     flex: 1,
   },
+  // summaryInfo: {
+  //   width: "50%",
+  //   height: 120,
+  //   backgroundColor: "#fff",
+  //   top: 100,
+  //   zIndex: 9999999,
+  //   borderRadius: 10,
+  //   paddingHorizontal: 12,
+  //   paddingVertical: 18,
+  //   flex: 0.2,
+  // },
+  // lowView: {
+  //   flexDirection: "row",
+  //   width: "100%",
+  //   top: 10,
+  // },
   balance: {
     borderBottomWidth: 0.5,
     borderBottomColor: "#D7DDE480",
@@ -645,6 +584,90 @@ const styles = StyleSheet.create({
     bottom: 4,
     alignSelf: "center",
   },
+  // bottomNav: {
+  //   flexDirection: "row",
+  //   height: 80,
+  //   position: "absolute",
+  //   bottom: 0,
+  //   width: "100%",
+  //   borderRadius: 20,
+  //   backgroundColor: "rgba(255,255,255,0.1)",
+  //   paddingVertical: 5,
+  // },
+  // navItem: {
+  //   flex: 1,
+  //   justifyContent: "center",
+  //   alignItems: "center",
+  // },
+  textContainer: {
+    position: "absolute",
+    bottom: 150,
+  },
+  text: {
+    fontSize: 20,
+    color: "#fff",
+  },
+
+  main: {
+    flex: 1,
+    backgroundColor: "#131429",
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    justifyContent: "space-between", // Ensures proper distribution of child views
+  },
+  summaryInfo: {
+    width: "100%",
+    borderRadius: 10,
+    padding: 15,
+    marginBottom: 20,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  lowView: {
+    flexDirection: "row",
+    justifyContent: "space-between", // Ensures even spacing
+    marginTop: 10,
+  },
+  container: {
+    flex: 1,
+    backgroundColor: "#f5f5f5",
+    borderRadius: 10,
+    padding: 15,
+    marginBottom: 20,
+    width: "100%",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  tab: {
+    width: "100%",
+    backgroundColor: "#ffffff",
+    padding: 15,
+    borderRadius: 10,
+    marginBottom: 10,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  name: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#333",
+  },
+  amount: {
+    fontSize: 16,
+    color: "#555",
+  },
   bottomNav: {
     flexDirection: "row",
     height: 80,
@@ -653,19 +676,17 @@ const styles = StyleSheet.create({
     width: "100%",
     borderRadius: 20,
     backgroundColor: "rgba(255,255,255,0.1)",
-    paddingVertical: 5,
+    paddingVertical: 10,
+    justifyContent: "space-around",
+    alignItems: "center",
   },
   navItem: {
-    flex: 1,
     justifyContent: "center",
     alignItems: "center",
   },
-  textContainer: {
-    position: "absolute",
-    bottom: 150,
-  },
-  text: {
-    fontSize: 20,
+  navText: {
     color: "#fff",
+    fontSize: 12,
+    marginTop: 5,
   },
 });

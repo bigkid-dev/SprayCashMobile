@@ -90,11 +90,19 @@ export default function RootLayout() {
             options={{ headerShown: false, title: "" }}
           />
           <Stack.Screen
+            name="auth/scan-event"
+            options={{ headerShown: false, title: "" }}
+          />
+          <Stack.Screen
             name="ride/index"
             options={{ headerShown: false, title: "" }}
           />
           <Stack.Screen
             name="Spray/index"
+            options={{ headerShown: false, title: "" }}
+          />
+          <Stack.Screen
+            name="Spray/spray-admin"
             options={{ headerShown: false, title: "" }}
           />
           <Stack.Screen name="+not-found" />

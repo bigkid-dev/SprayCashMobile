@@ -5,7 +5,8 @@ import CountryPicker from "react-native-country-picker-modal";
 import { widthFactor } from "@/constants/ScreenSize";
 import { useAuthContext } from "@/contexts/AutContext";
 import { AuthContextType } from "@/contexts/Auth";
-import DateTimePicker from '@react-native-community/datetimepicker';
+import DateTimePicker from "@react-native-community/datetimepicker";
+import { MaterialIcons } from "@expo/vector-icons";
 
 interface AuthValues {
   userName: string;
@@ -30,6 +31,8 @@ interface pryTextProps {
   secureText?: boolean;
   stateValue: keyof AuthValues;
   topText: string;
+  icon?: React.ComponentProps<typeof MaterialIcons>["name"];
+  value?: string;
 }
 
 const PryTextInput = ({
@@ -93,13 +96,13 @@ export const SecTextInput = ({
   placeHolder,
   secureText,
   stateValue,
+  value,
+  icon,
 }: pryTextProps) => {
   const [country, setCountry] = useState<any>(null);
   const [callingCode, setCallingCode] = useState<string>("");
   const [isFocused, setIsFocused] = useState<boolean>(false);
   const { values, updateValues } = useAuthContext();
-
-  
 
   console.log(values, stateValue);
 
@@ -120,7 +123,7 @@ export const SecTextInput = ({
         <View style={{ flexDirection: "row" }}>
           <TextInput
             secureTextEntry={secureText ? secureText : false}
-            value={values[stateValue]}
+            value={value ? value : values[stateValue]}
             placeholder={isFocused ? "" : placeHolder}
             placeholderTextColor={"#BDBDBD"}
             onFocus={() => setIsFocused(true)}
@@ -137,7 +140,7 @@ export const SecTextInput = ({
               },
             ]}
           />
-  
+          {icon}
         </View>
       </View>
     </View>

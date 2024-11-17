@@ -67,7 +67,7 @@ const TopChild = () => {
             preloader={isLoading}
             isCentered={true}
             text="JOIN"
-            url="Spray"
+            url="auth/scan-event"
           />
         </View>
         <Spacing space={30} />

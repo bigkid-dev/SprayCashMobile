@@ -48,13 +48,13 @@ const Login = () => {
                   </View>
                 </View>
                 <PryButton
-                  isRequest={true}
+                  // isRequest={true}
                   isCentered={true}
                   width={"100%"}
                   height={45}
                   text="Log in"
-                  requestUrl="api/v1/auth/signin/"
-                  url="ride"
+                  // requestUrl="api/v1/auth/signin/"
+                  url="auth/host-event"
                 />
               </>
             }

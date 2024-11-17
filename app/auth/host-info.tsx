@@ -6,6 +6,11 @@ import {
   ScaledSize,
   Dimensions,
   Platform,
+  Modal,
+  Pressable,
+  FlatList,
+  TouchableOpacity,
+  TextInput,
 } from "react-native";
 import DefaultPageLayout from "@/components/layout/Default";
 import ProfileSetup from "@/components/ui/auth/ProfileSetup";
@@ -26,6 +31,9 @@ import Spacing from "@/components/ui/general/Spacing";
 import Checkbox from "expo-checkbox";
 import { AntDesign } from "@expo/vector-icons";
 import { router } from "expo-router";
+import Entypo from "@expo/vector-icons/Entypo";
+import DateTimePicker from "@react-native-community/datetimepicker";
+import Ionicons from "@expo/vector-icons/Ionicons";
 
 interface contentType {
   index: number;
@@ -34,11 +42,21 @@ interface contentType {
   miniText: string;
 }
 
+interface Entry {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+}
+
 const SetupProfile = () => {
   const [position, setPosition] = useState(0);
   const blueColor = Colors.main.primaryColor;
   const [date, setDate] = useState(new Date());
   const [show, setShow] = useState(false);
+  const [mode, setMode] = useState<"date" | "time">("date");
+  const [modalVisible, setModalVisible] = useState(false);
+  const [entries, setEntries] = useState<Entry[]>([]);
   const content: contentType[] = [
     {
       index: 1,
@@ -82,6 +100,31 @@ const SetupProfile = () => {
     setDate(currentDate); // Update date state
   };
 
+  const handleUpdateEntry = (id: string, field: keyof Entry, value: string) => {
+    setEntries((prev) =>
+      prev.map((entry) =>
+        entry.id === id ? { ...entry, [field]: value } : entry
+      )
+    );
+  };
+  const handleAddEntry = () => {
+    setEntries((prev) => [
+      ...prev,
+      { id: `${Date.now()}`, name: "", email: "", role: "" },
+    ]);
+  };
+
+  const handleRemoveEntry = (id: string) => {
+    setEntries((prev) => prev.filter((entry) => entry.id !== id));
+  };
+
+  const handleSubmit = () => {
+    console.log("Submitted Entries:", entries);
+    setModalVisible(false);
+    setEntries([]);
+  };
+
+
   return (
     <DefaultPageLayout>
       <View style={{ height: height, padding: 20 }}>
@@ -104,19 +147,47 @@ const SetupProfile = () => {
             />
             <SecTextInput
               topText="Add other host (optional)"
-              placeHolder="email or phone"
+              placeHolder="email of e.g anyone to be funded, celebrants"
               stateValue="otherHost"
+              icon={
+                <Ionicons
+                  style={{ right: 20, top: 10 }}
+                  name="add-circle-outline"
+                  size={24}
+                  color="white"
+                  onPress={() => setModalVisible(true)}
+                />
+              }
             />
             <SecTextInput
               topText="Date of Event"
               placeHolder="mm/dd/yyyy"
               stateValue="dateOfEvent"
+              value={`${date}`}
+              icon={
+                <AntDesign
+                  style={{ right: 20, top: 10 }}
+                  name="calendar"
+                  size={20}
+                  color="white"
+                  onPress={() => setShow(true)}
+                />
+              }
             />
+
             <SecTextInput topText="BVN" placeHolder="" stateValue="bvn" />
             <SecTextInput
               topText="Location of event"
               placeHolder="e.g Civic centre, VI, Lagos"
               stateValue="location"
+              icon={
+                <Entypo
+                  style={{ right: 20, top: 10 }}
+                  name="location-pin"
+                  size={20}
+                  color="white"
+                />
+              }
             />
             <PryButton
               url="auth/share-code"
@@ -125,6 +196,14 @@ const SetupProfile = () => {
               text="Proceed"
               isRequest={false}
             />
+            {show && (
+              <DateTimePicker
+                value={date} // Initial date value
+                mode="date" // Choose 'date', 'time', or 'datetime'
+                display="default" // Choose 'default', 'spinner', or 'calendar'
+                onChange={onChange} // Callback for date changes
+              />
+            )}
           </View>
           <View style={{ flex: 0.1 }}>
             <View style={styles.check}>
@@ -156,6 +235,85 @@ const SetupProfile = () => {
         </View>
 
         <Spacing space={20} />
+        <Modal
+          visible={modalVisible}
+          transparent
+          animationType="slide"
+          onRequestClose={() => setModalVisible(false)}
+        >
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContent}>
+              <Text style={styles.modalTitle}>Add Multiple Entries</Text>
+
+              <FlatList
+                data={entries}
+                keyExtractor={(item) => item.id}
+                renderItem={({ item }) => (
+                  <View style={styles.entryContainer}>
+                    {/* Name Input */}
+                    <TextInput
+                      style={styles.input}
+                      placeholder="Name"
+                      value={item.name}
+                      onChangeText={(text) =>
+                        handleUpdateEntry(item.id, "name", text)
+                      }
+                    />
+                    {/* Email Input */}
+                    <TextInput
+                      style={styles.input}
+                      placeholder="Email or Phone Number"
+                      value={item.email}
+                      onChangeText={(text) =>
+                        handleUpdateEntry(item.id, "email", text)
+                      }
+                    />
+                    {/* Role Input */}
+                    <TextInput
+                      style={styles.input}
+                      placeholder="Role e.g Mother inLaw, Bride"
+                      value={item.role}
+                      onChangeText={(text) =>
+                        handleUpdateEntry(item.id, "role", text)
+                      }
+                    />
+                    {/* Remove Entry Button */}
+                    <Pressable
+                      style={styles.removeButton}
+                      onPress={() => handleRemoveEntry(item.id)}
+                    >
+                      <Text style={styles.removeButtonText}>Remove</Text>
+                    </Pressable>
+                  </View>
+                )}
+              />
+
+              {/* Add More Fields Button */}
+              <PryButton
+                text="Add Entry"
+                isCentered
+                handleAction={handleAddEntry}
+              />
+              <Spacing space={20} />
+              {/* Submit Button */}
+              <PryButton
+                text="Submit"
+                isCentered
+                color="#fff"
+                style={styles.submitButton}
+                handleAction={handleSubmit}
+              />
+
+              {/* Close Modal Button */}
+              <Pressable
+                style={styles.closeButton}
+                onPress={() => setModalVisible(false)}
+              >
+                <Text style={styles.closeButtonText}>Close</Text>
+              </Pressable>
+            </View>
+          </View>
+        </Modal>
       </View>
     </DefaultPageLayout>
   );
@@ -200,5 +358,99 @@ const styles = StyleSheet.create({
   },
   headers: {
     justifyContent: "center",
+  },
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#f5f5f5",
+  },
+  openButton: {
+    backgroundColor: "#4CAF50",
+    padding: 15,
+    borderRadius: 8,
+  },
+  openButtonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  modalOverlay: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+  modalContent: {
+    width: "90%",
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    padding: 20,
+    elevation: 10,
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginBottom: 20,
+    color: "#333",
+  },
+  entryContainer: {
+    marginBottom: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: "#ccc",
+    paddingBottom: 10,
+  },
+  input: {
+    width: "100%",
+    height: 40,
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    marginBottom: 10,
+    fontSize: 16,
+  },
+  addButton: {
+    backgroundColor: "#007BFF",
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    borderRadius: 8,
+    alignItems: "center",
+    marginVertical: 10,
+  },
+  addButtonText: {
+    color: "#fff",
+    fontSize: 16,
+  },
+  removeButton: {
+    backgroundColor: "#FF6347",
+    padding: 5,
+    borderRadius: 5,
+    alignItems: "center",
+    alignSelf: "flex-start",
+  },
+  removeButtonText: {
+    color: "#fff",
+    fontSize: 12,
+  },
+  submitButton: {
+    backgroundColor: "#28A745",
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    marginTop: 10,
+    alignItems: "center",
+  },
+  submitButtonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  closeButton: {
+    marginTop: 15,
+  },
+  closeButtonText: {
+    color: "#FF0000",
+    fontSize: 16,
   },
 });
