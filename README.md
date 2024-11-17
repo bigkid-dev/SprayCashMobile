@@ -7,11 +7,7 @@
 - [Requirements](#requirements)
     - [Funtional](#functional-requirements)
     - [Non-Functional](#functional-requirements)
-- [High Level Architecture](#high-level-architecture)
-- [Development Workflow](#development-workflow)
-- [Database Design](#database-design)
-- [Code Design](#code-design)
-- [Tools](#tools)
+- [Backend Service Repository](#backend-service)
 
 
 ## About
