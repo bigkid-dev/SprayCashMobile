@@ -55,3 +55,7 @@ Join our community of developers creating universal apps.
    ```bash
    npx expo start -c
    ```
+<a href="https://www.vecteezy.com/free-png/free-naira">Free Naira PNGs by Vecteezy</a>
+<a href="https://www.vecteezy.com/free-png/free-naira">Free Naira PNGs by Vecteezy</a>
+<a href="https://www.vecteezy.com/free-png/free-naira">Free Naira PNGs by Vecteezy</a>
+<a href="https://www.vecteezy.com/free-videos/money-gun">Money Gun Stock Videos by Vecteezy</a>

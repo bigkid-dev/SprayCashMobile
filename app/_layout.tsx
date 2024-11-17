@@ -66,7 +66,19 @@ export default function RootLayout() {
             options={{ headerShown: false, title: "" }}
           />
           <Stack.Screen
+            name="auth/verify-otp"
+            options={{ headerShown: false, title: "" }}
+          />
+          <Stack.Screen
             name="auth/reset-password"
+            options={{ headerShown: false, title: "" }}
+          />
+          <Stack.Screen
+            name="auth/host-event"
+            options={{ headerShown: false, title: "" }}
+          />
+          <Stack.Screen
+            name="auth/host-info"
             options={{ headerShown: false, title: "" }}
           />
           <Stack.Screen
@@ -74,11 +86,18 @@ export default function RootLayout() {
             options={{ headerShown: false, title: "" }}
           />
           <Stack.Screen
+            name="auth/share-code"
+            options={{ headerShown: false, title: "" }}
+          />
+          <Stack.Screen
             name="ride/index"
             options={{ headerShown: false, title: "" }}
           />
+          <Stack.Screen
+            name="Spray/index"
+            options={{ headerShown: false, title: "" }}
+          />
           <Stack.Screen name="+not-found" />
-         
         </Stack>
       </AuthContextProvider>
     </ThemeProvider>

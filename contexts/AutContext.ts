@@ -17,9 +17,15 @@ export interface AuthValues {
     countryCode: string;
     password: string;
     notification: boolean;
-    notificationMessage: string | errorObj;
+    notificationMessage: string;
     termsCondition?: boolean;
     code?: string;
+    notificationType?: "success"| "error";
+    partyName: string;
+    otherHost: string;
+    dateOfEvent: string;
+    bvn: string;
+    location: string;
 }
 
 
@@ -66,7 +72,8 @@ const AuthContext = createContext<AuthContextType>({
         notification: false,
         notificationMessage: "",
         termsCondition: false,
-        code:""
+        code:"",
+        notificationType:"success"
     },
     geoValues: {
         accuracy: 19.048999786376953,
@@ -87,25 +94,7 @@ interface AuthContextProviderProps {
     children: ReactNode;
 }
 
-// const AuthContextProvider = ({ children }: AuthContextProviderProps): ReactElement => {
-//     const [values, setValues] = useState<AuthValues>({
-//         userName: "",
-//         firstName: "",
-//         lastName: "",
-//         email: "",
-//         phoneNo: "",
-//         countryCode: "",
-//         password: ""
-//     });
 
-//     const updateValues = (newValues: Partial<AuthValues>) => {
-//         setValues((prevValues) => ({
-//             ...prevValues,
-//             ...newValues
-//         }));
-//     };
-
-// };
 
 const useAuthContext = (): AuthContextType => {
     const context = useContext(AuthContext);

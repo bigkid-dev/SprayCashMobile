@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   Image,
   ImageProps,
+  ActivityIndicator,
 } from "react-native";
 
 import { Colors } from "@/constants/Colors";
@@ -19,6 +20,10 @@ import { useAuthContext } from "@/contexts/AutContext";
 import { makePostRequest } from "@/lib/requests";
 import { postUserData, getUserData } from "@/lib/api-client";
 import { storeValue } from "@/constants/storage";
+
+interface valueType {
+  [key: string]: string;
+}
 
 type PryButtonProps = {
   text?: string;
@@ -32,6 +37,10 @@ type PryButtonProps = {
   color?: string;
   lastScreen?: string;
   isGet: boolean;
+  handleAction: () => void;
+  preloader: boolean;
+  value: valueType;
+  disabled?: boolean;
 };
 
 interface rippleBtnProps {
@@ -42,11 +51,20 @@ interface rippleBtnProps {
 
 interface errorObj {
   errors: string;
+  status: string;
+  message: string;
 }
 
 interface dataType {
   [key: string]: errorObj;
 }
+
+type ApiResponse = {
+  data: any; // Use `any` if the data can be null or other types
+  message: string;
+  status: "success" | "error"; // Use literal types for predefined string values
+  status_code: number;
+};
 
 interface Data {
   str: string;
@@ -61,6 +79,7 @@ interface ValueData {
   phone_number: string;
   country_code: string;
   code: string;
+  status: string;
 }
 
 type GetDataKey = (data: Data) => string | undefined;
@@ -79,86 +98,80 @@ export const PryButton = ({
   isRequest,
   url,
   height,
+  handleAction,
   width,
   handleRequest,
   requestUrl,
   color,
   lastScreen,
   isGet,
+  disabled,
+  value,
+  preloader,
 }: PryButtonProps) => {
   const { values, updateValues } = useAuthContext();
   const handleResponse = (
     status: number,
-    data: dataType,
+    data: ApiResponse,
     url: string,
     value: ValueData
   ) => {
     console.log("status", status);
 
     if (url && (status === 200 || status === 201)) {
+      updateValues({
+        notification: true,
+        notificationMessage: data["message"],
+        notificationType: data["status"],
+      });
       router.replace(url);
     } else if (status === 401) {
       router.push("auth/login");
-    } else if (url && status === 400) {
-      const key = getDataKey(data);
-      if (data["errors"]) {
-        updateValues({
-          notification: true,
-          notificationMessage: data["errors"],
-        });
-      } else if (key !== undefined && key !== null && key in value) {
-        console.log(data[key]);
-        updateValues({
-          notification: true,
-          notificationMessage: data[key]["errors"],
-        });
-      } else if (data) {
-        for (const someKey in data) {
-          updateValues({
-            notification: true,
-            notificationMessage: `${data[someKey]}`,
-          });
-        }
-      }
+    } else if ((url && status === 400) || 409) {
+      updateValues({
+        notification: true,
+        notificationMessage: data["message"],
+        notificationType: data["status"],
+      });
     }
   };
 
   const handleBtnPress = async () => {
+    console.log("values", value);
     if (isRequest) {
-      const value = {
-        username: values.userName,
-        first_name: values.firstName,
-        last_name: values.firstName,
-        email: values.email!,
-        password: values.password!,
-        phone_number: `${values.countryCode}${values.phone_number}`,
-        country_code: values.countryCode!,
-        code: values.code!,
-      };
-
-      //   makePostRequest('api/v1/auth/signup/', value )
-      const { status, data } = isGet
-        ? await getUserData(requestUrl!)
-        : await postUserData(value, requestUrl!);
+      const { status, data } = await postUserData(value, requestUrl!);
+      console.log(data, "data");
       handleResponse(status, data, url!, value);
     } else if (url && !requestUrl) {
       router.push(url);
+    } else if (handleAction) {
+      handleAction();
     }
   };
   return (
     <TouchableOpacity
       onPress={handleBtnPress}
+      disabled={disabled ? true : false}
       style={[
         styles.pryBtn,
         isCentered && { alignSelf: "center" },
         {
-          backgroundColor: color ? color : Colors.main.primaryColor,
+          backgroundColor: color ? color : "#7B27A3",
           height: height ? height : 45 * ScaleFactor(),
           width: width ? width : "80%",
+          borderWidth: color === "#fff" ? 1 : 0,
+          borderColor: color === "#fff" ? "#7B27A3" : "",
         },
       ]}
     >
-      <Text style={styles.btnText}>{text}</Text>
+      <Text
+        style={[
+          styles.btnText,
+          { color: color === "#fff" ? "#7B27A3" : "#fff" },
+        ]}
+      >
+        {preloader ? <ActivityIndicator /> : text}
+      </Text>
     </TouchableOpacity>
   );
 };
@@ -218,12 +231,12 @@ export const SocialButton = ({
 
 const styles = StyleSheet.create({
   pryBtn: {
-    backgroundColor: Colors.btn.blue,
+    backgroundColor: "#C82F81",
     height: 45 * ScaleFactor(),
     justifyContent: "center",
     alignItems: "center",
     width: "80%",
-    borderRadius: 7,
+    borderRadius: 50,
   },
   btnText: {
     fontSize: 14 * ScaleFactor(),

@@ -83,7 +83,7 @@ export default function App() {
 
   const getUrl = async () => {
     const url = await getValue("lastScreen");
-    router.push(url);
+    router.push("/onboardOne");
   };
 
   const handlePress = () => {
@@ -104,7 +104,7 @@ export default function App() {
   };
 
   useEffect(() => {
-    const url = getUrl();
+    // const url = getUrl();
     Animated.timing(fadeAnim, {
       toValue: 1,
       duration: 1000,
@@ -121,7 +121,6 @@ export default function App() {
       handlePress();
       getUrl();
     }, 3000);
-
   }, [fadeAnim, translateYAnim]);
 
   return (
@@ -135,7 +134,7 @@ export default function App() {
           transform: [{ translateY: translateYAnim }],
         }}
       >
-        <Text style={styles.centerText}>RideWithMe</Text>
+        <Text style={styles.centerText}>Spray Cash</Text>
       </Animated.View>
     </SafeAreaView>
   );

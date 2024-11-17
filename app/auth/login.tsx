@@ -33,14 +33,28 @@ const Login = () => {
                   stateValue="password"
                 />
                 <Spacing space={20 * ScaleFactor()} />
+                <View style={styles.check}>
+                  <View style={{ width: "50%", flexDirection: "row" }}>
+                    <Text style={styles.mainText}>
+                      Already Have an account?{" "}
+                      <Link
+                        href={"auth/login"}
+                        style={[styles.mainText, styles.link]}
+                      >
+                        {" "}
+                        Signup
+                      </Link>
+                    </Text>
+                  </View>
+                </View>
                 <PryButton
                   isRequest={true}
                   isCentered={true}
                   width={"100%"}
                   height={45}
                   text="Log in"
-                  requestUrl='api/v1/auth/signin/'
-                  url='ride'
+                  requestUrl="api/v1/auth/signin/"
+                  url="ride"
                 />
               </>
             }
@@ -55,14 +69,7 @@ const Login = () => {
 export default Login;
 
 const LowChild = () => {
-  return (
-    <Text style={styles.mainText}>
-      Dont Have an account?{" "}
-      <Link href={"auth/signup"} style={[styles.mainText, styles.link]}>
-        Sign up
-      </Link>
-    </Text>
-  );
+  return <View></View>;
 };
 //
 
@@ -70,9 +77,16 @@ const styles = StyleSheet.create({
   mainText: {
     alignSelf: "center",
     fontWeight: "400",
+    color: "#fff",
+    fontSize: 10,
   },
   link: {
     color: Colors.main.primaryColor,
     fontFamily: "NunitoSans_400Regular",
+  },
+  check: {
+    display: "flex",
+    flexDirection: "row",
+    marginBottom: 20,
   },
 });

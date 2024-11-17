@@ -1,2 +1,2 @@
 // export const base_url = 'https://mobilefae.online/'
-export const base_url = 'https://f7d3-102-88-68-18.ngrok-free.app/'
+export const base_url = 'https://spraydash-h6fahwahdtezbmcm.westeurope-01.azurewebsites.net/'

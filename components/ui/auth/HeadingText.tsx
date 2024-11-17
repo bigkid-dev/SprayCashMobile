@@ -24,7 +24,7 @@ const styles = StyleSheet.create({
       fontWeight: "500",
       fontSize: 32 * ScaleFactor(),
       fontFamily:"NunitoSans_400Regular",
-      color:'#101010'
+      color:'#FFF'
     },
     miniHeading:{
       color: "#BDBDBD",

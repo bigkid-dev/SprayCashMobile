@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "ridewithme",
-    "slug": "ridewithme",
+    "name": "spraycash",
+    "slug": "spraycash",
     "version": "2.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -14,14 +14,18 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.bigkid.ridewithme"
+      "bundleIdentifier": "com.bigkid.spraycash"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.bigkid.ridewithme"
+      "package": "com.bigkid.ridewithme",
+      "permissions": [
+        "android.permission.RECORD_AUDIO",
+        "android.permission.MODIFY_AUDIO_SETTINGS"
+      ]
     },
     "web": {
       "bundler": "metro",
@@ -31,7 +35,8 @@
     "plugins": [
       "expo-router",
       "expo-font",
-      "expo-secure-store"
+      "expo-secure-store",
+      "expo-av"
     ],
     "experiments": {
       "typedRoutes": true
@@ -41,7 +46,7 @@
         "origin": false
       },
       "eas": {
-        "projectId": "b548aa54-9fa4-4f56-897d-d8493653678e"
+        "projectId": "4906a82b-327a-472f-82f8-c230468be9a4"
       }
     }
   }

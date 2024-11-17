@@ -64,12 +64,12 @@ export const postUserData = async (value: UserData, url: string) => {
   
   try {
     const response = await api.post(`${base_url}${url}`,value );
-    if(response.data.auth_token.backend){
-      storeValue("token",response.data.auth_token.refresh)
+    if(response?.data?.accessToken){
+      storeValue("token",response.data.accessToken)
     }
 
     return {
-      "status": response.status, 
+      "status": response.data.status_code, 
       "data": response.data
     }
 } catch (error) {

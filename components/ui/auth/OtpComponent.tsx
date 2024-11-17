@@ -12,6 +12,7 @@ import { ScaleFactor } from "@/constants/ScreenSize";
 import { widthFactor } from "@/constants/ScreenSize";
 import { Link } from "expo-router";
 import { useAuthContext } from "@/contexts/AutContext";
+import Spacing from "../general/Spacing";
 
 interface otpProps {
   boxCount?: number;
@@ -63,26 +64,26 @@ const OtpComponent = ({ boxCount, headingText }: otpProps) => {
   ));
   return (
     <View style={{ flex: 1 }}>
-      <View style={{ flex: 0.2 }}>
-        <Text style={styles.phoneInfoText}>{headingText}</Text>
-      </View>
       <View
         style={{
-          flex: 0.8,
+          flex: 1,
           flexDirection: "row",
           justifyContent: "space-around",
+          marginBottom: 10,
         }}
       >
         {boxes}
       </View>
-
+        <Spacing space={20}/>
       <Text
         style={{
           fontWeight: "400",
           fontSize: 12,
+          color: "#fff",
+          textAlign: "center",
         }}
       >
-        resend code
+        Didnt recieve OTP? resend code
       </Text>
     </View>
   );
@@ -98,11 +99,12 @@ const styles = StyleSheet.create({
   box: {
     width: 50 * widthFactor(),
     height: 50 * ScaleFactor(),
-    borderWidth: 1,
+    borderBottomWidth: 1,
     margin: 5,
     borderRadius: 8,
     paddingLeft: 20 * ScaleFactor(),
     borderColor: "#5E5E5E",
+    color:"#fff"
   },
 });
 
