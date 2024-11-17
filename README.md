@@ -48,52 +48,11 @@ There is a need for a solution that preserves the essence of `Nanwo Lagbo` while
 - Low Latency: I mean, Obviously this is really important too, our system can be slow.
 
 
-## High Level Architecture <a name="hla"></a>
-![hla](/assets/hla.png)
 
 
 
+## Backend Service Repository
 
-## Development Workflow  <a name="dw"></a>
-![workflow](/assets/workflow.png)
-
-
-
-
-## Database Design
-![table](/assets/tab.png)
-
-
-## Code Design
-
-
-
-## Tools
-- Golang with ❤
-- Azure App Service
-- Azure Container Registry
-- Azure CLI
-- Docker 
-- Docker Compose
-- Vscode
-- Github Actions
-- Goroutine
-- Azure Redis Cache
-- Copilot/AI
-- Kubernetes -> to be used in the next phase
-- AKS -> to be used in the next phase
-
-
-## Technical Challenges
-
-Why working on the websocket connections, we had some challenges keeping the websocket connection alive through out the party duration, and also the issue of recreating a new connection when a new guests joins the party, thereby preventing us to be able to broadcast the new join event to the guest already in party.
-The first issue was from the code logical naive implementation, the socket conn wasn't deferred to close at the end of a goroutine, at first for a second I couldn't place why the connection keeps disconnecting immediately it connects, but after a moment of processing the code flow 🤦, I realized I was closing the connection outside the goroutine function that keeps the connection alive. The second arise from the fact that we where persisting our guests to our document database and weren't able to keep track of their connection objects and also creating a new websocket connection pool for the guest.  
-
-
-## Backend Service Demo
-
-
-
-https://github.com/user-attachments/assets/627284c9-3a1e-4ebc-9612-ffa8d519b180
+https://github.com/LogizonX/SprayCash/tree/dev
 
 
