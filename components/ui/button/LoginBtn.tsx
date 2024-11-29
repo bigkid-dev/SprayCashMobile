@@ -32,6 +32,7 @@ type PryButtonProps = {
   color?: string;
   lastScreen?: string;
   isGet: boolean;
+  handleAction: () => void;
 };
 
 interface rippleBtnProps {
@@ -85,6 +86,7 @@ export const PryAuthButton = ({
   color,
   lastScreen,
   isGet,
+  handleAction,
 }: PryButtonProps) => {
   const { values, updateValues } = useAuthContext();
   const handleResponse = (
@@ -143,6 +145,8 @@ export const PryAuthButton = ({
       handleResponse(status, data, url!, value);
     } else if (url && !requestUrl) {
       router.push(url);
+    } else if (handleAction) {
+      handleAction();
     }
   };
   return (

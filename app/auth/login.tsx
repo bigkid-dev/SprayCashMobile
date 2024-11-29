@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import DefaultPageLayout from "@/components/layout/Default";
 import BasicTemp from "@/components/ui/general/BasicTemplate";
@@ -6,12 +6,46 @@ import HeadingText from "@/components/ui/auth/HeadingText";
 import PryButton from "@/components/ui/button/LoginBtn";
 import PryTextInput from "@/components/ui/inputs/textInputs";
 import TopChild from "@/components/ui/auth/TopChild";
-import { Link } from "expo-router";
+import { Link, router } from "expo-router";
 import { Colors } from "@/constants/Colors";
 import Spacing from "@/components/ui/general/Spacing";
 import { ScaleFactor } from "@/constants/ScreenSize";
+import { LoginPayload, loginUser } from "@/api/auth";
+import { storeValue } from "@/constants/storage";
+import { useAuthContext } from "@/contexts/AutContext";
 
 const Login = () => {
+
+  const [preloader, setPreloader] = useState(false);
+  const { values, updateValues } = useAuthContext();
+
+  const handleAction = async () => {
+    const payload: LoginPayload = {
+      email: values["userName"],
+      password: values["password"],
+    };
+    setPreloader(true);
+    const response = await loginUser(payload);
+    console.log(response);
+    if (response.status === "success") {
+      setPreloader(false);
+      updateValues({
+        notification: true,
+        notificationType: "success",
+        notificationMessage: "Login successful",
+      });
+      storeValue("token", response.data.accessToken);
+      storeValue("user", response.data.user);
+      router.push("Spray");
+    } else {
+      setPreloader(false);
+      updateValues({
+        notification: true,
+        notificationType: "error",
+        notificationMessage: response.message,
+      });
+    }
+  };
   return (
     <DefaultPageLayout>
       <BasicTemp
@@ -54,7 +88,9 @@ const Login = () => {
                   height={45}
                   text="Log in"
                   // requestUrl="api/v1/auth/signin/"
-                  url="auth/host-event"
+                  // url="auth/host-event"
+                  handleAction={handleAction}
+                  preloader={preloader}
                 />
               </>
             }
