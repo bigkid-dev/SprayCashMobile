@@ -18,6 +18,7 @@ import { useAuthContext } from "@/contexts/AutContext";
 import Spacing from "@/components/ui/general/Spacing";
 import Checkbox from "expo-checkbox";
 import Notification from "@/components/ui/general/Notifications";
+import { registerUser, RegisterPayload } from "@/api/auth";
 
 // userName: string;
 //         firstName: string;
@@ -31,6 +32,7 @@ const SetupProfile = () => {
   const { values, updateValues } = useAuthContext();
   const [showNotification, setShowNotification] = useState(false);
   const [isChecked, setChecked] = useState(false);
+  const [preloader, setPreloader] = useState(false);
   const valueDict = {
     name: values["firstName"],
     email: values["email"],
@@ -39,6 +41,34 @@ const SetupProfile = () => {
   const handleNotify = () => {
     updateValues({ notification: false });
   };
+
+
+  const handleAction = async () => {
+    const payload: RegisterPayload = {
+      email: values["email"],
+      password: values["password"],
+      name: values["firstName"],
+      username: values["userName"],
+    };
+    setPreloader(true);
+    const response = await registerUser(payload);
+    console.log(response);
+    if (response.status === "success") {
+      setPreloader(false);
+      updateValues({
+        notification: true,
+        notificationType: "success",
+        notificationMessage: "Account created successfully",
+      });
+    } else {
+      setPreloader(false);
+      updateValues({
+        notification: true,
+        notificationType: "error",
+        notificationMessage: response.message,
+      });
+    }
+  }
 
   return (
     <DefaultPageLayout>
@@ -91,12 +121,14 @@ const SetupProfile = () => {
                 </View>
                 <Spacing space={20} />
                 <PryButton
-                  url="auth/setup-profile"
+                  // url="auth/setup-profile"
                   isCentered={true}
                   width={"100%"}
                   text="submit"
+                  handleAction={handleAction}
                   // isRequest={true}
                   // requestUrl="api/v1/auth/register"
+                  preloader={preloader}
                   value={valueDict}
                   disabled={!isChecked}
                   color={!isChecked ? "#D3BCE4" : ""}

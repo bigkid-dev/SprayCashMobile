@@ -146,6 +146,7 @@ export const PryButton = ({
       router.push(url);
     } else if (handleAction) {
       handleAction();
+      router.push("auth/login");
     }
   };
   return (
