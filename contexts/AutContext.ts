@@ -2,11 +2,11 @@ import React, { useState, createContext, ReactNode, ReactElement, useContext } f
 
 interface errorObj {
     errors: string;
-  }
-  
-  interface dataType {
+}
+
+interface dataType {
     [key: string]: errorObj;
-  }
+}
 
 export interface AuthValues {
     userName: string;
@@ -20,25 +20,26 @@ export interface AuthValues {
     notificationMessage: string;
     termsCondition?: boolean;
     code?: string;
-    notificationType?: "success"| "error";
+    notificationType?: "success" | "error";
     partyName: string;
     otherHost: string;
     dateOfEvent: string;
     bvn: string;
     location: string;
+    accountDetails: any;
 }
 
 
 export interface geoType {
-    accuracy: number ,
-    longitude: number ,
-    latitude: number ,
-    altitude: number ,
-    heading: number ,
-    speed: number ,
-    mocked: boolean , 
-    timeStamp: number ,
-    altitudeAccuracy: number 
+    accuracy: number,
+    longitude: number,
+    latitude: number,
+    altitude: number,
+    heading: number,
+    speed: number,
+    mocked: boolean,
+    timeStamp: number,
+    altitudeAccuracy: number
 }
 
 interface geoTypeTwo {
@@ -48,10 +49,10 @@ interface geoTypeTwo {
     altitude: number | null,
     heading: number | null,
     speed: number | null,
-    mocked: boolean | null, 
+    mocked: boolean | null,
     timeStamp: number | null,
-    altitudeAccuracy: number | null 
-  }
+    altitudeAccuracy: number | null
+}
 
 interface AuthContextType {
     values: AuthValues;
@@ -72,8 +73,9 @@ const AuthContext = createContext<AuthContextType>({
         notification: false,
         notificationMessage: "",
         termsCondition: false,
-        code:"",
-        notificationType:"success"
+        code: "",
+        notificationType: "success",
+        accountDetails: {}
     },
     geoValues: {
         accuracy: 19.048999786376953,
@@ -86,8 +88,8 @@ const AuthContext = createContext<AuthContextType>({
         timeStamp: 1717497188169,
         altitudeAccuracy: 28.6000003814697
     },
-    updateValues: () => {},
-    updateGeoValues: () => {}
+    updateValues: () => { },
+    updateGeoValues: () => { }
 });
 
 interface AuthContextProviderProps {
@@ -104,7 +106,7 @@ const useAuthContext = (): AuthContextType => {
     return context;
 };
 
-const useGeoContext = () =>{
+const useGeoContext = () => {
     const context = useContext(AuthContext);
     if (!context) {
         throw new Error("useAuthContext must be used within an AuthContextProvider");
@@ -112,4 +114,4 @@ const useGeoContext = () =>{
     return context;
 }
 
-export { AuthContext,  useAuthContext, useGeoContext };
+export { AuthContext, useAuthContext, useGeoContext };

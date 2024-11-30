@@ -38,6 +38,8 @@ import SoundPlayer from "react-native-sound-player";
 import { Audio } from "expo-av";
 import LiveVideo from "./LiveVideo";
 import { useAuthContext } from "@/contexts/AutContext";
+import { getUserDetails } from "@/api/user";
+import { getValue } from "@/constants/storage";
 
 // import { RippleButton } from "../ui/button/Buttons";
 
@@ -176,11 +178,31 @@ const OnboardTwo = () => {
   React.useEffect(() => {
     return sound
       ? () => {
-          console.log("Unloading Sound");
-          sound.unloadAsync();
-        }
+        console.log("Unloading Sound");
+        sound.unloadAsync();
+      }
       : undefined;
   }, [sound]);
+
+
+  const fetchUserDetails = async () => {
+    const token = await getValue("token");
+    const response = await getUserDetails(token);
+    if (response.status === "success") {
+      console.log(response);
+      setBalance(response.data.wallet_balance);
+      updateValues({
+        accountDetails: response.data.account_details,
+      })
+    } else {
+      console.log("error", response);
+    }
+  }
+
+
+  React.useEffect(() => {
+    fetchUserDetails();
+  }, []);
 
   const startShake = () => {
     setBalance(balance - balanceVal);
