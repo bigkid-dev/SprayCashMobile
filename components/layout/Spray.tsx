@@ -40,6 +40,7 @@ import LiveVideo from "./LiveVideo";
 import { useAuthContext } from "@/contexts/AutContext";
 import { getUserDetails } from "@/api/user";
 import { getValue } from "@/constants/storage";
+import { router } from "expo-router";
 
 // import { RippleButton } from "../ui/button/Buttons";
 
@@ -466,6 +467,9 @@ const OnboardTwo = () => {
             <TouchableOpacity
               onPress={() => {
                 if (items.name === "live") setIsLive(false);
+                else if (items.name === "Fund Wallet") {
+                  router.push("Spray/fund-wallet")
+                }
               }}
               key={items.index}
               style={styles.navItem}
